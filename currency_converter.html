@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="text"], select {
+            width: calc(50% - 10px);
+            padding: 10px;
+            margin: 10px 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: red;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Currency Converter</h1>
+        <select id="from">
+            <option value="USD">USD - United States Dollar</option>
+            <option value="EUR">EUR - Euro</option>
+            <option value="GBP">GBP - British Pound</option>
+            <option value="JPY">JPY - Japanese Yen</option>
+            <!-- Add more currency options as needed -->
+        </select>
+        <input type="text" id="amt" placeholder="Amount">
+        <br>
+        <select id="to">
+            <option value="EUR">EUR - Euro</option>
+            <option value="USD">USD - United States Dollar</option>
+            <option value="GBP">GBP - British Pound</option>
+            <option value="JPY">JPY - Japanese Yen</option>
+            <!-- Add more currency options as needed -->
+        </select>
+        <input type="text" id="conamt" placeholder="Converted Amount" readonly>
+        <br>
+        <button>Convert</button>
+    </div>
+ 
+    <script>
+        const btn = document.querySelector('button');
+        btn.addEventListener('click', function() {
+            const fromCurr = document.querySelector('#from').value;
+            const toCurr = document.querySelector('#to').value;
+            const amt = parseFloat(document.querySelector('#amt').value);
+            const conamt = document.querySelector('#conamt');
+
+            if (isNaN(amt) || amt <= 0) {
+                conamt.value = "Invalid amount";
+                return;
+            }
+
+            const url = `https://api.exchangerate-api.com/v4/latest/${fromCurr}`;
+            fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const rate = data.rates[toCurr];
+                if (rate) {
+                    const convertedAmt = amt * rate;
+                    conamt.value = convertedAmt.toFixed(2);
+                } else {
+                    conamt.value = "Conversion not available";
+                }
+            })
+            .catch(error => {
+                conamt.value = "Error fetching data";
+            });
+        });
+    </script>
+</body>
+</html>
